@@ -1,7 +1,7 @@
 "use client";
 
 import { useWeather } from "@/contexts/WeatherContext";
-import { getDateForDayOfWeek } from "@/lib/date-utils";
+import { getDateForDayOfWeek, addDays } from "@/lib/date-utils";
 import { useState, useEffect } from "react";
 
 export default function WeatherCard() {
@@ -17,21 +17,26 @@ export default function WeatherCard() {
         setLoading(true);
   
         const date = getDateForDayOfWeek(dayOfWeek);
+        const nextDate = addDays(date, 7); 
 
-        fetch(`/api/weather?location=${encodeURIComponent(location)}&date=${date}`, {
+        Promise.all([
+          fetch(`/api/weather?location=${encodeURIComponent(location)}&date=${date}`, {
             signal: controller.signal,
+          }).then((res) => res.json()),
+          fetch(`/api/weather?location=${encodeURIComponent(location)}&date=${nextDate}`, {
+            signal: controller.signal,
+          }).then((res) => res.json()),
+        ])
+          .then(([dateData, nextDateData]) => {
+            setWeatherData({ date: dateData ?? {}, nextDate: nextDateData ?? {} });
           })
-            .then((res) => res.json())
-            .then((data) => {
-              setWeatherData(data ?? []);
-            })
-            .catch((err) => {
-              if (err.name === "AbortError") return;
-              setError(err.message);
-            })
-            .finally(() => setLoading(false));
-      
-          return () => controller.abort();
+          .catch((err) => {
+            if (err.name === "AbortError") return;
+            setError(err.message);
+          })
+          .finally(() => setLoading(false));
+
+        return () => controller.abort();
     }
   }, [location, dayOfWeek, eventOfDay, page]);
 

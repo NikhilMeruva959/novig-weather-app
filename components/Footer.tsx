@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function Footer() {
   return (
     <footer className="mt-auto border-t border-zinc-200 bg-white px-4 py-6 dark:border-zinc-800 dark:bg-zinc-950">
@@ -6,9 +8,9 @@ export function Footer() {
           © {new Date().getFullYear()} WHETHER.IO
         </p>
         <div className="flex gap-6 text-sm text-zinc-500 dark:text-zinc-400">
-          <a href="" className="hover:text-zinc-900 dark:hover:text-zinc-100">
+          <Link href="/help" className="hover:text-zinc-900 dark:hover:text-zinc-100">
             Help
-          </a>
+          </Link>
         </div>
       </div>
     </footer>

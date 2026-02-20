@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 export function Navbar() {
@@ -8,7 +9,10 @@ export function Navbar() {
       <a href="/" className="text-lg font-semibold tracking-tight">
         WHETHER.IO
       </a>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-10">
+        <Link href="/help" className="text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
+          Help
+        </Link>
         <SignedOut>
           <SignInButton>
             <button className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200">
