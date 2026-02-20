@@ -4,6 +4,7 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const location = searchParams.get("location");
   const date = searchParams.get("date");
+  const iconSet = searchParams.get("iconSet");
 
   if (!location || location.trim().length < 1) {
     return NextResponse.json(
@@ -26,6 +27,7 @@ export async function GET(req: Request) {
   url.searchParams.set("contentType", "json");
   url.searchParams.set("include", "days,hours");
   url.searchParams.set("lang", "en");
+  url.searchParams.set("iconSet", iconSet === "icons1" ? "icons1" : "icons2");
 
   const res = await fetch(url.toString());
   const data = await res.json();

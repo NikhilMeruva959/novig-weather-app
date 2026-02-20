@@ -22,3 +22,20 @@ export function addDays(dateStr: string, days: number): string {
   d.setDate(d.getDate() + days);
   return d.toISOString().slice(0, 10);
 }
+
+function getOrdinalSuffix(day: number): string {
+  if (day >= 11 && day <= 13) return "th";
+  switch (day % 10) {
+    case 1: return "st";
+    case 2: return "nd";
+    case 3: return "rd";
+    default: return "th";
+  }
+}
+
+export function formatDateTitle(dateStr: string, dayOfWeek: string, isNext: boolean): string {
+  const d = new Date(dateStr + "T12:00:00");
+  const day = d.getDate();
+  const prefix = isNext ? "Next" : "This";
+  return `${prefix} ${dayOfWeek} the ${day}${getOrdinalSuffix(day)}`;
+}
