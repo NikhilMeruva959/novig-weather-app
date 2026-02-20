@@ -33,9 +33,17 @@ function getOrdinalSuffix(day: number): string {
   }
 }
 
-export function formatDateTitle(dateStr: string, dayOfWeek: string, isNext: boolean): string {
+export function formatDateTitle(
+  dateStr: string,
+  dayOfWeek: string,
+  isNext: boolean,
+  isNotCurrent = false
+): string {
   const d = new Date(dateStr + "T12:00:00");
   const day = d.getDate();
+  if (isNotCurrent) {
+    return `${dayOfWeek} the ${day}${getOrdinalSuffix(day)}`;
+  }
   const prefix = isNext ? "Next" : "This";
   return `${prefix} ${dayOfWeek} the ${day}${getOrdinalSuffix(day)}`;
 }

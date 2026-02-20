@@ -49,6 +49,46 @@ const EVENT_HOUR_RANGES: Record<string, number[]> = {
   "Evening (5pm - 9pm)": [17, 18, 19, 20],
 };
 
+/** Event hours expanded by 3 hrs before start and 4 hrs after end */
+const EXPANDED_EVENT_HOUR_RANGES: Record<string, number[]> = {
+  "Morning (8am - 12pm)": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+  "Afternoon (12pm - 5pm)": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+  "Evening (5pm - 9pm)": [14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+};
+
+export type GraphHour = {
+  datetime: string;
+  hour: number;
+  temp: number;
+  precipprob: number;
+  windspeed: number;
+};
+
+function parseHourFromDatetime(datetime: string): number {
+  const timePart = datetime.includes("T") ? datetime.split("T")[1] ?? datetime : datetime;
+  return parseInt(timePart.slice(0, 2), 10);
+}
+
+export function getExpandedHoursForEvent(
+  hours: Array<{ datetime: string; temp: number; precipprob?: number; windspeed?: number }> | undefined,
+  eventOfDay: string
+): GraphHour[] {
+  if (!hours?.length) return [];
+  const allowedHours = EXPANDED_EVENT_HOUR_RANGES[eventOfDay];
+  if (!allowedHours) return [];
+
+  return hours
+    .filter((h) => allowedHours.includes(parseHourFromDatetime(h.datetime)))
+    .map((h) => ({
+      datetime: h.datetime,
+      hour: parseHourFromDatetime(h.datetime),
+      temp: h.temp,
+      precipprob: h.precipprob ?? 0,
+      windspeed: h.windspeed ?? 0,
+    }))
+    .sort((a, b) => a.hour - b.hour);
+}
+
 export function getHoursForEvent(hours: WeatherHour[] | undefined, eventOfDay: string): WeatherHour[] {
   if (!hours?.length) return [];
   const allowedHours = EVENT_HOUR_RANGES[eventOfDay];
