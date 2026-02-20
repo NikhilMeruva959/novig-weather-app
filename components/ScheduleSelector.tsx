@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useWeather } from "@/contexts/WeatherContext";
 import { ChevronDownIcon } from "lucide-react";
 import {
   DropdownMenu,
@@ -17,12 +17,10 @@ const EVENTS_OF_DAY = [
   { label: "Evening", time: "5pm - 9pm", value: "Evening (5pm - 9pm)" },
 ] as const;
 
-type DayOfWeek = (typeof DAYS_OF_WEEK)[number];
-type EventOfDay = (typeof EVENTS_OF_DAY)[number]["value"];
+
 
 export default function ScheduleSelector() {
-  const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek | undefined>(undefined);
-  const [eventOfDay, setEventOfDay] = useState<EventOfDay | undefined>(undefined);
+  const { dayOfWeek, setDayOfWeek, eventOfDay, setEventOfDay } = useWeather();
 
   return (
     <div className="flex flex-wrap items-center gap-4">

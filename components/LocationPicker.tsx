@@ -5,6 +5,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { useWeather } from "@/contexts/WeatherContext";
 import { Search, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
@@ -18,6 +19,7 @@ type PlacePrediction = {
 };
 
 export default function LocationPicker() {
+  const { setLocation } = useWeather();
   const [userInput, setUserInput] = useState<string>("");
   const [selectedLocation, setSelectedLocation] = useState<PlacePrediction | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -48,6 +50,7 @@ export default function LocationPicker() {
   const handleSelect = (prediction: PlacePrediction) => {
     setUserInput(prediction.description);
     setSelectedLocation(prediction);
+    setLocation(prediction.description);
     setSuggestions([]);
     setShowDropdown(false);
   };
@@ -55,6 +58,7 @@ export default function LocationPicker() {
   const handleClear = () => {
     setUserInput("");
     setSelectedLocation(null);
+    setLocation(null);
     setSuggestions([]);
     setShowDropdown(false);
     requestAnimationFrame(() => inputRef.current?.focus()); //schedules focusing the input on the next paint after batching prev steps
