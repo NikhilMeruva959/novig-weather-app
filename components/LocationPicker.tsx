@@ -80,7 +80,7 @@ export default function LocationPicker() {
   };
 
   return (
-    <div className="relative max-w-xs">
+    <div className="relative w-full max-w-sm">
       <InputGroup>
         <InputGroupInput
           ref={inputRef}
@@ -88,6 +88,7 @@ export default function LocationPicker() {
           type="text"
           placeholder="Search Location..."
           value={userInput}
+          readOnly={!!selectedLocation}
           onChange={(e) => setUserInput(e.target.value)}
           onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
           onBlur={handleBlur}
