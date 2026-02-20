@@ -14,6 +14,7 @@ export default function Home() {
             <ScheduleSelector />
           </div>
           <Separator className="mt-6 bg-black dark:bg-black" />
+          <WeatherCard />
         </div>
       </div>
     </WeatherProvider>

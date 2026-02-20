@@ -3,8 +3,7 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const location = searchParams.get("location");
-  const startDate = searchParams.get("startDate");
-  const endDate = searchParams.get("endDate");
+  const date = searchParams.get("date");
 
   if (!location || location.trim().length < 1) {
     return NextResponse.json(
@@ -12,24 +11,15 @@ export async function GET(req: Request) {
       { status: 400 },
     );
   }
-  if (!startDate) {
+  if (!date || date.trim().length < 1) {
     return NextResponse.json(
-      { error: "Start Date is required" },
-      { status: 400 },
-    );
-  }
-  if (!endDate) {
-    return NextResponse.json(
-      { error: "End Date is required" },
+      { error: "Date is required" },
       { status: 400 },
     );
   }
 
   const basePath = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline";
-  const pathSegments = [encodeURIComponent(location)];
-  if (startDate) pathSegments.push(startDate);
-  if (endDate) pathSegments.push(endDate);
-  const url = new URL(`${basePath}/${pathSegments.join("/")}`);
+  const url = new URL(`${basePath}/${encodeURIComponent(location)}/${date}`);
 
   url.searchParams.set("key", process.env.VISUAL_CROSSING_API_KEY!);
   url.searchParams.set("unitGroup", "us");

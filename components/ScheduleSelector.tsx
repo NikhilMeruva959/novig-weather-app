@@ -67,7 +67,7 @@ export default function ScheduleSelector() {
             className="h-9 w-[220px] justify-between border-zinc-200 font-normal dark:border-zinc-800"
           >
             <span className={!eventOfDay ? "text-muted-foreground" : ""}>
-              {eventOfDay ?? "Time of day"}
+              {eventOfDay ? EVENTS_OF_DAY.find((e) => e.value === eventOfDay)?.label ?? eventOfDay : "Time of day"}
             </span>
             <ChevronDownIcon className="size-4 opacity-50" />
           </Button>
