@@ -34,17 +34,28 @@ export default function LocationPicker() {
     if (userInput.trim().length < 1) {
       setSuggestions([]);
       setShowDropdown(false);
+      setLoading(false);
       return;
     }
+
+    const controller = new AbortController();
     setLoading(true);
-    fetch(`/api/places?input=${encodeURIComponent(userInput)}`)
+
+    fetch(`/api/places?input=${encodeURIComponent(userInput)}`, {
+      signal: controller.signal,
+    })
       .then((res) => res.json())
       .then((data) => {
         setSuggestions(data.predictions ?? []);
         setShowDropdown(true);
       })
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        if (err.name === "AbortError") return;
+        setError(err.message);
+      })
       .finally(() => setLoading(false));
+
+    return () => controller.abort();
   }, [userInput, selectedLocation]);
 
   const handleSelect = (prediction: PlacePrediction) => {
