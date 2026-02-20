@@ -13,3 +13,11 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model UserPreferences {
+  id                   String   @id @default(cuid())
+  clerkUserID          String   @unique
+  lastSearchedLocation String
+  placeId              String?
+  updatedAt            DateTime @updatedAt
+}

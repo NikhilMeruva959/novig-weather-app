@@ -5,6 +5,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { useAuth } from "@clerk/nextjs";
 import { useWeather } from "@/contexts/WeatherContext";
 import { MapPin, Search, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -19,7 +20,8 @@ type PlacePrediction = {
 };
 
 export default function LocationPicker() {
-  const { setLocation } = useWeather();
+  const { isSignedIn } = useAuth();
+  const { location, setLocation } = useWeather();
   const [userInput, setUserInput] = useState<string>("");
   const [selectedLocation, setSelectedLocation] = useState<PlacePrediction | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -27,6 +29,17 @@ export default function LocationPicker() {
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sync local state when location is set from context (e.g. last-location fetch on load)
+  useEffect(() => {
+    if (location) {
+      setUserInput(location);
+      setSelectedLocation({ place_id: "", description: location });
+    } else {
+      setUserInput("");
+      setSelectedLocation(null);
+    }
+  }, [location]);
 
   // Fetch suggestions when user input changes (skip when a location is selected)
   useEffect(() => {
@@ -62,6 +75,16 @@ export default function LocationPicker() {
     setUserInput(prediction.description);
     setSelectedLocation(prediction);
     setLocation(prediction.description);
+    if (isSignedIn) {
+      fetch("/api/user/last-location", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lastSearchedLocation: prediction.description,
+          placeId: prediction.place_id,
+        }),
+      }).catch(() => {});
+    }
     setSuggestions([]);
     setShowDropdown(false);
   };
