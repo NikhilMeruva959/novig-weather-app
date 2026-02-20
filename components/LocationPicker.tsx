@@ -81,7 +81,7 @@ export default function LocationPicker() {
 
   return (
     <div className="relative w-full max-w-sm">
-      <InputGroup>
+      <InputGroup className="bg-white dark:bg-zinc-950 [&:has([data-slot=input-group-control]:focus-visible)]:ring-[1px]">
         <InputGroupInput
           ref={inputRef}
           id="userInput"
