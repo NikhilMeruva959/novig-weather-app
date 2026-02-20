@@ -6,7 +6,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { useWeather } from "@/contexts/WeatherContext";
-import { Search, X } from "lucide-react";
+import { MapPin, Search, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 type PlacePrediction = {
@@ -93,7 +93,7 @@ export default function LocationPicker() {
           onBlur={handleBlur}
         />
         <InputGroupAddon>
-          <Search />
+          {selectedLocation ? <MapPin /> : <Search />}
         </InputGroupAddon>
         <InputGroupAddon align="inline-end">
           {selectedLocation ? (

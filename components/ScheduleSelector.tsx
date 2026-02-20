@@ -1,7 +1,7 @@
 "use client";
 
 import { useWeather } from "@/contexts/WeatherContext";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, Clock } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,8 +38,11 @@ export default function ScheduleSelector() {
             variant="outline"
             className="h-9 w-[180px] justify-between border-zinc-200 font-normal dark:border-zinc-800"
           >
-            <span className={!dayOfWeek ? "text-muted-foreground" : ""}>
-              {dayOfWeek ? DAYS_OF_WEEK.find((d) => d.value === dayOfWeek)?.label ?? dayOfWeek : "Day of week"}
+            <span className="flex items-center gap-2">
+              {dayOfWeek && <Clock className="size-4" />}
+              <span className={!dayOfWeek ? "text-muted-foreground" : ""}>
+                {dayOfWeek ? DAYS_OF_WEEK.find((d) => d.value === dayOfWeek)?.label ?? dayOfWeek : "Day of week"}
+              </span>
             </span>
             <ChevronDownIcon className="size-4 opacity-50" />
           </Button>
