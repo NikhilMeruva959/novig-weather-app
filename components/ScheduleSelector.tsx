@@ -10,7 +10,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"] as const;
+const DAYS_OF_WEEK = [
+  { label: "Every Monday", value: "Monday" },
+  { label: "Every Tuesday", value: "Tuesday" },
+  { label: "Every Wednesday", value: "Wednesday" },
+  { label: "Every Thursday", value: "Thursday" },
+  { label: "Every Friday", value: "Friday" },
+  { label: "Every Saturday", value: "Saturday" },  
+  { label: "Every Sunday", value: "Sunday" },
+] as const;
 const EVENTS_OF_DAY = [
   { label: "Morning", time: "8am - 12pm", value: "Morning (8am - 12pm)" },
   { label: "Afternoon", time: "12pm - 5pm", value: "Afternoon (12pm - 5pm)" },
@@ -31,7 +39,7 @@ export default function ScheduleSelector() {
             className="h-9 w-[180px] justify-between border-zinc-200 font-normal dark:border-zinc-800"
           >
             <span className={!dayOfWeek ? "text-muted-foreground" : ""}>
-              {dayOfWeek ?? "Day of week"}
+              {dayOfWeek ? DAYS_OF_WEEK.find((d) => d.value === dayOfWeek)?.label ?? dayOfWeek : "Day of week"}
             </span>
             <ChevronDownIcon className="size-4 opacity-50" />
           </Button>
@@ -42,11 +50,11 @@ export default function ScheduleSelector() {
         >
           {DAYS_OF_WEEK.map((day) => (
             <DropdownMenuItem
-              key={day}
-              onSelect={() => setDayOfWeek(day)}
+              key={day.value}
+              onSelect={() => setDayOfWeek(day.value)}
               className="focus:bg-zinc-100 hover:bg-zinc-100 dark:focus:bg-zinc-800 dark:hover:bg-zinc-800"
             >
-              {day}
+              {day.value}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
