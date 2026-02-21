@@ -26,7 +26,7 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
   const [dayOfWeek, setDayOfWeek] = useState<string | undefined>(undefined);
   const [eventOfDay, setEventOfDay] = useState<string | undefined>(undefined);
 
-  // Step 11: Fetch and apply last location when user signs in
+  // Step 11: Fetch and apply last preferences when user signs in
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;
     fetch("/api/user/last-location")
@@ -35,6 +35,14 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
         const loc = data?.lastSearchedLocation;
         if (typeof loc === "string" && loc.length > 0) {
           setLocation(loc);
+        }
+        const day = data?.lastDayOfWeek;
+        if (typeof day === "string") {
+          setDayOfWeek(day);
+        }
+        const event = data?.lastEventOfDay;
+        if (typeof event === "string") {
+          setEventOfDay(event);
         }
       })
       .catch(() => {});

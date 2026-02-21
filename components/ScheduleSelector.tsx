@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@clerk/nextjs";
 import { useWeather } from "@/contexts/WeatherContext";
 import { ChevronDownIcon, Clock } from "lucide-react";
 import {
@@ -25,10 +26,33 @@ const EVENTS_OF_DAY = [
   { label: "Evening", time: "5pm - 9pm", value: "Evening (5pm - 9pm)" },
 ] as const;
 
-
+function saveSchedule(isSignedIn: boolean, lastDayOfWeek?: string, lastEventOfDay?: string) {
+  const hasDay = typeof lastDayOfWeek === "string";
+  const hasEvent = typeof lastEventOfDay === "string";
+  if (!isSignedIn || (!hasDay && !hasEvent)) return;
+  const body: Record<string, string> = {};
+  if (hasDay) body.lastDayOfWeek = lastDayOfWeek!;
+  if (hasEvent) body.lastEventOfDay = lastEventOfDay!;
+  fetch("/api/user/last-location", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  }).catch(() => {});
+}
 
 export default function ScheduleSelector() {
+  const { isSignedIn } = useAuth();
   const { dayOfWeek, setDayOfWeek, eventOfDay, setEventOfDay } = useWeather();
+
+  const handleDaySelect = (value: string) => {
+    setDayOfWeek(value);
+    saveSchedule(!!isSignedIn, value, eventOfDay);
+  };
+
+  const handleEventSelect = (value: string) => {
+    setEventOfDay(value);
+    saveSchedule(!!isSignedIn, dayOfWeek, value);
+  };
 
   return (
     <div className="flex flex-wrap items-center gap-4">
@@ -54,7 +78,7 @@ export default function ScheduleSelector() {
           {DAYS_OF_WEEK.map((day) => (
             <DropdownMenuItem
               key={day.value}
-              onSelect={() => setDayOfWeek(day.value)}
+              onSelect={() => handleDaySelect(day.value)}
               className="focus:bg-zinc-100 hover:bg-zinc-100 dark:focus:bg-zinc-800 dark:hover:bg-zinc-800"
             >
               {day.value}
@@ -82,7 +106,7 @@ export default function ScheduleSelector() {
           {EVENTS_OF_DAY.map((event) => (
               <DropdownMenuItem
                 key={event.label}
-                onSelect={() => setEventOfDay(event.value)}
+                onSelect={() => handleEventSelect(event.value)}
                 className="focus:bg-zinc-100 hover:bg-zinc-100 dark:focus:bg-zinc-800 dark:hover:bg-zinc-800"
               >
                 <span className="flex w-full justify-between gap-4">
