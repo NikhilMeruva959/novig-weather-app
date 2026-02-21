@@ -107,13 +107,13 @@ export default function WeatherCard() {
   const summaryNextDate = getEventWeatherSummary(dayNextDate, eventOfDay);
 
   return (
-    <div className="px-6 py-4">
+    <div className="px-0 py-4 sm:px-6">
       <div className="flex items-center gap-2 sm:gap-0">
         <div className="flex shrink-0 items-center justify-center">
           <button
             type="button"
             onClick={() => setWeeksOffset((prev) => prev - 1)}
-            className="flex items-center justify-center p-2 hover:opacity-70"
+            className="flex items-center justify-center px-0 py-2 hover:opacity-70 sm:p-2"
             aria-label="Previous weeks"
           >
             <ChevronLeft className="size-8 text-zinc-500 dark:text-zinc-400" />
@@ -216,7 +216,7 @@ export default function WeatherCard() {
           <button
             type="button"
             onClick={() => setWeeksOffset((prev) => prev + 1)}
-            className="flex items-center justify-center p-2 hover:opacity-70 disabled:opacity-40 disabled:hover:opacity-40"
+            className="flex items-center justify-center px-0 py-2 hover:opacity-70 disabled:opacity-40 disabled:hover:opacity-40 sm:p-2"
             aria-label="Next weeks"
           >
             <ChevronRight className="size-8 text-zinc-500 dark:text-zinc-400" />

@@ -12,9 +12,15 @@ import {
   ReferenceLine,
   ReferenceArea,
 } from "recharts";
-import { useState, useId } from "react";
+import { useState, useId, useEffect } from "react";
 
 type GraphMetric = "Temperature" | "Precipitation" | "Wind";
+
+const METRIC_LABEL_SHORT: Record<GraphMetric, string> = {
+  Temperature: "Temp",
+  Precipitation: "Precip",
+  Wind: "Wind",
+};
 
 const METRIC_CONFIG: Record<
   GraphMetric,
@@ -102,7 +108,16 @@ type WeatherGraphProps = {
 
 export default function WeatherGraph({ hours, eventOfDay }: WeatherGraphProps) {
   const [metric, setMetric] = useState<GraphMetric>("Temperature");
+  const [isMobile, setIsMobile] = useState(false);
   const gradientId = `gradient-${useId().replace(/:/g, "-")}`;
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const onResize = () => setIsMobile(mq.matches);
+    onResize();
+    mq.addEventListener("change", onResize);
+    return () => mq.removeEventListener("change", onResize);
+  }, []);
 
   if (!hours.length) return null;
 
@@ -137,8 +152,8 @@ export default function WeatherGraph({ hours, eventOfDay }: WeatherGraphProps) {
   }
 
   return (
-    <div className="h-72 w-full min-h-[280px]">
-      <div className="mb-1 grid grid-cols-3 place-items-center">
+    <div className="h-56 min-h-[220px] w-full sm:h-72 sm:min-h-[280px]">
+      <div className="mb-1 grid grid-cols-3 place-items-center gap-0">
         {(Object.keys(METRIC_CONFIG) as GraphMetric[]).map((m) => {
           const { color } = METRIC_CONFIG[m];
           const isActive = metric === m;
@@ -147,16 +162,17 @@ export default function WeatherGraph({ hours, eventOfDay }: WeatherGraphProps) {
               key={m}
               variant="link"
               size="sm"
-              className="h-auto gap-2 rounded-none border-b-2 border-transparent p-0 pb-0.5 text-sm font-medium text-zinc-700 no-underline hover:border-zinc-900 hover:no-underline dark:text-zinc-300 dark:hover:border-zinc-100"
+              className="h-auto gap-1 rounded-none border-b-2 border-transparent p-0 pb-0.5 text-xs font-medium text-zinc-700 no-underline hover:border-zinc-900 hover:no-underline sm:gap-2 sm:text-sm dark:text-zinc-300 dark:hover:border-zinc-100"
               style={isActive ? { borderBottomColor: "#000" } : undefined}
               onClick={() => setMetric(m)}
             >
               <span
-                className="h-0.5 w-6 shrink-0 rounded"
+                className="h-0.5 w-4 shrink-0 rounded sm:w-6"
                 style={{ backgroundColor: color }}
                 aria-hidden
               />
-              {m}
+              <span className="sm:hidden">{METRIC_LABEL_SHORT[m]}</span>
+              <span className="hidden sm:inline">{m}</span>
             </Button>
           );
         })}
@@ -175,7 +191,7 @@ export default function WeatherGraph({ hours, eventOfDay }: WeatherGraphProps) {
                   dy={8}
                   textAnchor="middle"
                   fill="currentColor"
-                  fontSize={11}
+                  fontSize={isMobile ? 7 : 11}
                   className="text-zinc-600 dark:text-zinc-400"
                 >
                   {payload.value}
@@ -245,16 +261,30 @@ export default function WeatherGraph({ hours, eventOfDay }: WeatherGraphProps) {
                 const text =
                   typeof value === "number" ? config.formatValue(value) : "";
                 const yNum = typeof y === "number" ? y : 0;
+                const baseSize = metric === "Wind" ? 9 : 11;
+                const mainSize = isMobile ? 7 : baseSize;
+                const showSmallMph = metric === "Wind" && isMobile && typeof value === "number";
                 return (
                   <text
                     x={x}
                     y={yNum - 5}
                     textAnchor="middle"
                     fill="currentColor"
-                    fontSize={metric === "Wind" ? 9 : 11}
-                    className="fill-zinc-600 dark:fill-zinc-400"
+                    fontSize={mainSize}
+                    fontWeight={600}
+                    stroke="#fff"
+                    strokeWidth={2.5}
+                    paintOrder="stroke"
+                    className="fill-zinc-900 dark:fill-zinc-100"
                   >
-                    {text}
+                    {showSmallMph ? (
+                      <>
+                        <tspan>{Math.round(value)}</tspan>
+                        <tspan fontSize={5}> mph</tspan>
+                      </>
+                    ) : (
+                      text
+                    )}
                   </text>
                 );
               }}
