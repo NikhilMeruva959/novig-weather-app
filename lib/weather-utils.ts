@@ -156,22 +156,51 @@ export type EventWeatherSummary = {
   avgPrecipprob: number;
 };
 
-export function getEventWeatherSummary(
-  day: { hours?: WeatherHour[] } | undefined,
-  eventOfDay: string
-): EventWeatherSummary | null {
-  const hours = getHoursForEvent(day?.hours as WeatherHour[], eventOfDay);
-  if (!hours.length) return null;
+/** Daily-level day object (e.g. future dates from Visual Crossing API without hours) */
+type DailyDay = {
+  temp?: number;
+  conditions?: string;
+  windspeed?: number;
+  precipprob?: number;
+  icon?: string;
+};
 
-  const condition = getMostCommonCondition(hours);
-  const iconId = condition === "Mixed" ? "Mixed" : (getMostCommonIcon(hours) || "cloudy");
+export function getDailyWeatherSummary(
+  day: DailyDay | undefined
+): EventWeatherSummary | null {
+  if (!day || day.temp == null) return null;
+
+  const condition = getPrimaryCondition(day.conditions ?? "");
+  const iconId = day.icon ?? "cloudy";
   const icon = WEATHER_ICON_MAP[iconId] ?? Cloud;
 
   return {
-    condition,
+    condition: condition || "Unknown",
     icon,
-    avgTemp: getAverageTemp(hours),
-    avgWindspeed: getAverageWindspeed(hours),
-    avgPrecipprob: getAveragePrecipprob(hours),
+    avgTemp: day.temp,
+    avgWindspeed: Math.round((day.windspeed ?? 0) * 10) / 10,
+    avgPrecipprob: Math.round(day.precipprob ?? 0),
   };
+}
+
+export function getEventWeatherSummary(
+  day: { hours?: WeatherHour[] } & DailyDay | undefined,
+  eventOfDay: string
+): EventWeatherSummary | null {
+  const hours = getHoursForEvent(day?.hours as WeatherHour[], eventOfDay);
+  if (hours.length) {
+    const condition = getMostCommonCondition(hours);
+    const iconId = condition === "Mixed" ? "Mixed" : (getMostCommonIcon(hours) || "cloudy");
+    const icon = WEATHER_ICON_MAP[iconId] ?? Cloud;
+
+    return {
+      condition,
+      icon,
+      avgTemp: getAverageTemp(hours),
+      avgWindspeed: getAverageWindspeed(hours),
+      avgPrecipprob: getAveragePrecipprob(hours),
+    };
+  }
+
+  return getDailyWeatherSummary(day);
 }

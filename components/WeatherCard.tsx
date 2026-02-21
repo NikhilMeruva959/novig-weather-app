@@ -152,15 +152,17 @@ export default function WeatherCard() {
                   </p>
                 </div>
               </div>
-              <div className="mt-4">
-                <WeatherGraph
-                  hours={getExpandedHoursForEvent(dayDate?.hours, eventOfDay)}
-                  eventOfDay={eventOfDay}
-                />
-                <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-                  {eventOfDay.split(" ")[0]}
-                </p>
-              </div>
+              {dayDate?.hours?.length ? (
+                <div className="mt-4">
+                  <WeatherGraph
+                    hours={getExpandedHoursForEvent(dayDate?.hours, eventOfDay)}
+                    eventOfDay={eventOfDay}
+                  />
+                  <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
+                    {eventOfDay.split(" ")[0]}
+                  </p>
+                </div>
+              ) : null}
             </>
           ) : (
             <p className="text-sm text-zinc-500">No data for this time range</p>
@@ -193,15 +195,17 @@ export default function WeatherCard() {
                   </p>
                 </div>
               </div>
-              <div className="mt-4">
-                <WeatherGraph
-                  hours={getExpandedHoursForEvent(dayNextDate?.hours, eventOfDay)}
-                  eventOfDay={eventOfDay}
-                />
-                <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
-                  {eventOfDay.split(" ")[0]}
-                </p>
-              </div>
+              {dayNextDate?.hours?.length ? (
+                <div className="mt-4">
+                  <WeatherGraph
+                    hours={getExpandedHoursForEvent(dayNextDate?.hours, eventOfDay)}
+                    eventOfDay={eventOfDay}
+                  />
+                  <p className="mt-6 text-center text-sm text-zinc-500 dark:text-zinc-400">
+                    {eventOfDay.split(" ")[0]}
+                  </p>
+                </div>
+              ) : null}
             </>
           ) : (
             <p className="text-sm text-zinc-500">No data for this time range</p>
@@ -211,7 +215,7 @@ export default function WeatherCard() {
         <div className="flex shrink-0 items-center justify-center">
           <button
             type="button"
-            onClick={() => setWeeksOffset((prev) => Math.min(0, prev + 1))}
+            onClick={() => setWeeksOffset((prev) => prev + 1)}
             className="flex items-center justify-center p-2 hover:opacity-70 disabled:opacity-40 disabled:hover:opacity-40"
             aria-label="Next weeks"
           >
