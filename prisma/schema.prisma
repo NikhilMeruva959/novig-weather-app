@@ -20,4 +20,6 @@ model UserPreferences {
   lastSearchedLocation String
   placeId              String?
   updatedAt            DateTime @updatedAt
+  lastDayOfWeek        String?
+  lastEventOfDay       String?
 }
